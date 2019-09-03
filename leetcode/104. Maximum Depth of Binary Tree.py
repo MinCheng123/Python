@@ -22,7 +22,7 @@ class Solution(object):
                 deep=temp2
                 
         deep=max(deep,temp)
-        return deep     
+        return deep     4
 
 # Definition for a binary tree node.
 class TreeNode(object):
