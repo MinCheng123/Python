@@ -36,8 +36,8 @@ class Direction:
         
 class Coordination:
     
-    def __init__(self,direction):
-        self.matrix = [[0 for i in range(22)] for j in range(13)] # surrounded wall plus 2 
+    def __init__(self,direction,matrix):
+        self.matrix = matrix # surrounded wall plus 2 
         self.tank_coordinate=[11,10] #[row][colomn] lvl1 
         self.Direction=direction
         self.old_coordinate=[-1,-1]
@@ -116,11 +116,13 @@ class Solution:
     def __init__(self):
         # If you need initialization code, you can write it here!
         # Do not remove.
+        self.matrix = [[0 for i in range(22)] for j in range(13)]
         self.direction = [1,0,0,0] # up left down right
 #        self.old_direction= [-1,-1,-1,-1]
         self.Direction = Direction(self.direction)
-        self.Coordination=Coordination(self.direction)
+        self.Coordination=Coordination(self.direction,self.matrix)
         self.target = True
+       
         pass
 
     def update(self):
