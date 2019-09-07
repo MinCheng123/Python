@@ -90,7 +90,7 @@ class Coordination:
     
     def direction_detection_object(self,distance):
         
-        print('object direction',self.Direction)
+        print('object direction',self.Direction,'tank coordiante',self.tank_coordinate)
         for index, element in enumerate(self.Direction):
             if element == 1:
                 if index == 0: #up
@@ -119,7 +119,7 @@ class Explore:
         self.adjacent_coordinate_value=[-1,-1,-1,-1]
         self.matrix= matrix
         self.Direction = Direction
-        
+        self.direction_index=0
     def adjacent_coordinate(self):
         
         self.up    = [self.tank_coordinate[0]-1, self.tank_coordinate[1]   ] 
@@ -187,27 +187,89 @@ class Explore:
                 # else:
                 #     self.Direction.go_right()
                 # print('adjacent',adjacent_coordinate_value[index_direction], random_value )
-                
-
-
-
+    def turn_left_or_right(self): # return 0 == left else right
+        for index, element in enumerate(self.direction):
+                if element == 1:
+                    self.direction_index=index
+        if self.adjacent_coordinate_value[0] ==1 and  self.adjacent_coordinate_value[1] ==1:  # up left down right
+            if self.direciton_index == 1:
+                return 0
+            if self.direction_index == 0:
+                return 1
+        if self.adjacent_coordinate_value[0] ==1 and  self.adjacent_coordinate_value[3] ==1:
+            if self.direction_index == 0:
+                return 0
+            if self.direction_index == 3:
+                return 1
+        if self.adjacent_coordinate_value[1] ==1 and  self.adjacent_coordinate_value[2] ==1:
+            if self.direction_index == 1:
+                return 1
+            if self.direction_index == 2:
+                return 0
+        if self.adjacent_coordinate_value[3] ==1 and  self.adjacent_coordinate_value[2] ==1:        
+            if self.direction_index == 3:
+                return 0
+            if self.direction_index == 2:  
+                return 1
+                    
+                    
+                    
+class fire_mode:
+    def __init__(self,direction):
+        self.scan_distance=[-1,-1,-1,-1] # up left down right
+        self.direction = direction  #up left down right
+        self.Direction = Direction(direction)
+        self.distance_limit=4
+        self.front=api.lidar_front()
+        self.left =api.lidar_left()
+        self.right=api.lidar_right()
+        self.back =api.lidar_back()
+        
+    def lidar_scan(self):
+        self.front=api.lidar_front()
+        self.left =api.lidar_left()
+        self.right=api.lidar_right()
+        self.back =api.lidar_back()
+        for index,element in enumerate(self.direction):
+            if element == 1:
+                if index == 0:
+                    self.scan_distance=[self.front,self.left,self.back,self.right]
+                if index == 1:
+                    self.scan_distance=[self.right,self.front ,self.left, self.back ]
+                if index == 2:
+                    self.scan_distance=[self.back,self.right ,self.front,self.left]
+                if index == 3:
+                    self.scan_distance=[self.left,self.back, self.right, self.front]
+        print('scan_distance',self.scan_distance,'scan_direction',self.direction)
+    
+    # def enemy_check(self):
+    #     if 
+        # max_index=scan_distance.index(max(scan_distance))
+        # for index,element in enumerate(self.direction):
+        #     if element == 1:
+        #         if max_index-index ==  
+            
 
 class Solution:
     
     def __init__(self):
         # If you need initialization code, you can write it here!
         # Do not remove.
-        self.matrix = [[0 for i in range(22)] for j in range(12)]
-        self.direction = [0,0,0,1] #[1,0,0,0] up left down right
-        self.tank_coordinate=[5, 1]  #[10,10]
+        self.matrix = [[0 for i in range(44)] for j in range(30)]
+        self.direction = [0,0,1,0] #[1,0,0,0] up left down right
+        self.tank_coordinate=[5, 10]  #[10,10]
 #        self.old_direction= [-1,-1,-1,-1]
         self.Direction = Direction(self.direction)
         self.Coordination=Coordination(self.direction,self.matrix,self.tank_coordinate)
         self.Explore = Explore(self.tank_coordinate,self.direction,self.matrix,self.Direction)
+        self.fire_mode = fire_mode(self.direction)
         self.target = True
         self.fire_flag= False
         self.next_turn = 1 
-        
+        self.moving_forward_flag=True
+        self.old_fuel =0
+        self.moving_forward_blocked_flag=False
+
 
     def update(self):
         """
@@ -219,17 +281,46 @@ class Solution:
         """
         # Todo: Write your code here!
         #self.Coordination.object_detect(self.direction)
+        self.old_fuel = api.current_fuel()
         if self.fire_flag == False:
+#            if self.moving_forward_blocked_flag == False:
+#                if self.moving_forward_flag == True:
             self.Coordination.tank_track()
             self.Coordination.object_detect(self.direction)
+        self.moving_forward_blocked_flag = False
 #        print(self.Explore.next_turn_direction())
-            print( 'tank coordinate:',self.tank_coordinate)
-            if self.Explore.next_turn_direction() and api.identify_target() is False:
-                self.Direction.go_left()
+        print( 'tank coordinate:',self.tank_coordinate)
+        if self.Explore.next_turn_direction() and api.identify_target() is False :
+            if self.Explore.turn_left_or_right() is 0:
+                self.Direction.go_left() 
+            else:
+                self.Direction.go_right()
+            # if random.randint(0,100) > 20:
+                
+            #     self.Direction.go_left() 
+            # else:
+            #     self.Direction.go_right()
+            self.fire_mode.lidar_scan()
+            self.moving_forward_flag = False
+        elif api.identify_target():
+                api.fire_cannon()
+                self.fire_flag = True
+                self.next_turn =1     
+                print('fire!!!')
+        else:
+            print('tank is moving forward !!!!')
             api.move_forward()
+            self.moving_forward_flag = True
+            if self.moving_forward_flag and (self.old_fuel-api.current_fuel() ) >=50 and api.identify_target() :
+                print('ops blocked',api.identify_target(), api.lidar_front()<=1 )
+                self.moving_forward_blocked_flag=True
+        print('api.identify_target():',api.identify_target())
+        self.Coordination.print_map()  
+        self.fire_mode.lidar_scan()
 
-        self.Coordination.print_map()
+
         
+       
 #        if self.fire_flag == False:
             
         
@@ -237,13 +328,13 @@ class Solution:
 
 #        self.Explore.adjacent_coordinate()
             
-        print('fuel',api.current_fuel() )    
+        print('fuel',api.current_fuel(),self.old_fuel )    
       
-        if api.identify_target():
-            api.fire_cannon()
-            self.fire_flag = True
-            self.next_turn =1     
-            print('fire!!!')
+        # if api.identify_target():
+        #     api.fire_cannon()
+        #     self.fire_flag = True
+        #     self.next_turn =1     
+        #     print('fire!!!')
         if self.next_turn != 0:    
             self.fire_flag = True
             self.next_turn-=1
