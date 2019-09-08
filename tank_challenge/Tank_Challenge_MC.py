@@ -1,6 +1,9 @@
 import api
 import copy
 import random 
+'''
+copy right: this code belongs to Min Cheng minc@student.chalmers.se https://github.com/MinCheng123
+'''
 
 class Direction:
     
@@ -248,17 +251,20 @@ class fire_mode:
         # for index,element in enumerate(self.direction):
         #     if element == 1:
         #         if max_index-index ==  
-            
+    
 
 class Solution:
     
     def __init__(self):
         # If you need initialization code, you can write it here!
         # Do not remove.
-        self.matrix = [[0 for i in range(44)] for j in range(30)]
+
+        self.matrix = [[0 for i in range(44)] for j in range(24)]
+    
         self.direction = [0,0,1,0] #[1,0,0,0] up left down right
         self.tank_coordinate=[5, 10]  #[10,10]
 #        self.old_direction= [-1,-1,-1,-1]
+        
         self.Direction = Direction(self.direction)
         self.Coordination=Coordination(self.direction,self.matrix,self.tank_coordinate)
         self.Explore = Explore(self.tank_coordinate,self.direction,self.matrix,self.Direction)
@@ -280,26 +286,19 @@ class Solution:
         the tank runs out of fuel.
         """
         # Todo: Write your code here!
-        #self.Coordination.object_detect(self.direction)
+
         self.old_fuel = api.current_fuel()
         if self.fire_flag == False:
-#            if self.moving_forward_blocked_flag == False:
-#                if self.moving_forward_flag == True:
             self.Coordination.tank_track()
             self.Coordination.object_detect(self.direction)
-        self.moving_forward_blocked_flag = False
-#        print(self.Explore.next_turn_direction())
+
         print( 'tank coordinate:',self.tank_coordinate)
         if self.Explore.next_turn_direction() and api.identify_target() is False :
             if self.Explore.turn_left_or_right() is 0:
                 self.Direction.go_left() 
             else:
                 self.Direction.go_right()
-            # if random.randint(0,100) > 20:
-                
-            #     self.Direction.go_left() 
-            # else:
-            #     self.Direction.go_right()
+
             self.fire_mode.lidar_scan()
             self.moving_forward_flag = False
         elif api.identify_target():
@@ -313,28 +312,14 @@ class Solution:
             self.moving_forward_flag = True
             if self.moving_forward_flag and (self.old_fuel-api.current_fuel() ) >=50 and api.identify_target() :
                 print('ops blocked',api.identify_target(), api.lidar_front()<=1 )
-                self.moving_forward_blocked_flag=True
+
         print('api.identify_target():',api.identify_target())
         self.Coordination.print_map()  
         self.fire_mode.lidar_scan()
 
 
-        
-       
-#        if self.fire_flag == False:
-            
-        
-           
-
-#        self.Explore.adjacent_coordinate()
-            
         print('fuel',api.current_fuel(),self.old_fuel )    
       
-        # if api.identify_target():
-        #     api.fire_cannon()
-        #     self.fire_flag = True
-        #     self.next_turn =1     
-        #     print('fire!!!')
         if self.next_turn != 0:    
             self.fire_flag = True
             self.next_turn-=1
