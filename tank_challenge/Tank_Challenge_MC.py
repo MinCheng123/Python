@@ -2,7 +2,8 @@ import api
 import copy
 import random 
 '''
-copy right: this code belongs to Min Cheng minc@student.chalmers.se https://github.com/MinCheng123
+Copyright: this code belongs to Min Cheng minc@student.chalmers.se https://github.com/MinCheng123 highest score 7600
+http://honeypot.softwareskills.se
 '''
 
 class Direction:
