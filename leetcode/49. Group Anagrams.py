@@ -6,10 +6,13 @@ class Solution(object):
         :rtype: List[List[str]]
         """
         answer=collections.defaultdict(list)
-        count=0
+        List=[]
         for index, word in enumerate(strs):
                 answer[str(sorted(word))].append(word)
-        return answer.values()
+        for i in answer:
+            List.append(answer[i])
+
+        return List
 strs=["eat", "tea", "tan", "ate", "nat", "bat"]
 abc=Solution()
 answer=abc.groupAnagrams(strs)
