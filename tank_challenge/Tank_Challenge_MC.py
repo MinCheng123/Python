@@ -2,8 +2,8 @@ import api
 import copy
 import random 
 '''
-Copyright: this code belongs to Min Cheng minc@student.chalmers.se https://github.com/MinCheng123 highest score 7600 rank 25
-http://honeypot.softwareskills.se
+Copyright: this code is written by Min Cheng minc@student.chalmers.se https://github.com/MinCheng123 highest score 8400
+https://futureskill.com/  then click FS Challenge ' try it out'
 '''
 
 class Direction:
