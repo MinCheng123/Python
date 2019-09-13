@@ -24,7 +24,7 @@ class Solution(object):
                 
          
         return str('{}A{}B'.format(bull,cow))
-secret = "1123"
+secret = "1234"
 
 guess = "0111"
 
