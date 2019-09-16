@@ -6,27 +6,31 @@ class Solution(object):
         :rtype: str
         """
         bull,cow=0,0
-        p=0
+        p,q=0,0
         temp=0
         count=0
+        secret,guess=list(secret),list(guess)
         while p<len(guess):
-                
                 if secret[p] == guess[p]:
                     bull+=1
                     count+=1
-                elif guess[p] in secret :
-                    if temp==guess[p]:
-                        count+=1
-                    if count<=2:
-                        cow+=1  
-                temp=guess[p]
-                p+=1
+                    secret.pop(p)
+                    guess.pop(p)
+                else:
+                    p+=1
+        while q<len(guess):
+            if guess[q] in secret:
+                secret.remove(guess[q])
+                cow+=1
+            q+=1   
                 
          
         return str('{}A{}B'.format(bull,cow))
-secret = "1234"
 
-guess = "0111"
+
+secret = "1122"
+
+guess = "2211"
 
 abc=Solution()
 answer=abc.getHint(secret,guess)
