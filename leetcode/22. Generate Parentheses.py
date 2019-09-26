@@ -4,32 +4,24 @@ class Solution(object):
         :type n: int
         :rtype: List[str]
         """
-        left,right = n,n
-        self.answer=[]
-        temp=""
-        self.recursive(left,right,temp) 
-        return self.answer
-
-
-    def recursive(self,left,right,temp):
-        if not left and not right:
-            self.answer.append("".join(temp))
-            return 
-
-        if  left:                
-            temp = temp + "("
-            left -= 1
-            self.recursive(left,right,temp)     
+        l,r=n,n
+        answer=[]
+        sub=''
+        self.backtracking(l,r,sub,answer)
+        return answer
         
-        if right and left < right :
-            temp = temp + ")"
-            right -= 1
-            self.recursive(left,right,temp)   
-                        
-    
-        
-        
+    def backtracking(self,l,r,sub,answer):
+        if l==0 and r == 0:
+            answer.append(sub)
+            return
+        if l > r:
+            return
+
+            
+        if l >0:
+            self.backtracking(l-1,r,sub+'(',answer)
+        if r >0:
+            self.backtracking(l,r-1,sub+')',answer)
+
 abc=Solution()
-answer = abc.generateParenthesis(3)
-print(answer)
-aaaaaaaaaaaaaaaaaaaaaaaaa
+abc.generateParenthesis(3)

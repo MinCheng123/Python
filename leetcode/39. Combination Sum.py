@@ -5,26 +5,24 @@ class Solution(object):
         :type target: int
         :rtype: List[List[int]]
         """
-
-        i=0
-        value=0
+        summation=0
         answer=[]
         List=[]
-        self.recursive(candidates,value,answer,List,target)
+        temp_index=0
+        self.backtracking(candidates,target,summation,answer,List,temp_index)
         return answer
-
-    def recursive(self,candidates,value,answer,List,target):
-
-        if value < target:
-            for index, element in enumerate(candidates):
-                    
-
-                    self.recursive(candidates[index:],value+element,answer,List+[element],target)
-
-        elif value == target:
-            answer.append(List)
-        else:
+    
+    def backtracking(self,candidates,target,summation,answer,List,temp_index):
+        if summation > target:
             return
+        elif summation == target:
+            answer.append(List)
+            
+        for index,i in enumerate(candidates):
+            
+            if index>=temp_index:
+                temp_index=index
+                self.backtracking(candidates,target,summation+i,answer,List+[i],temp_index)
 
 Candidates=[2,3,6,7]
 target = 7
